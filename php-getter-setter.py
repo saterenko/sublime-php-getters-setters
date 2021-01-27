@@ -166,15 +166,7 @@ class Variable(object):
             return ''
 
         if self.type.find(" ") > -1 or self.type.find("|") > -1:
-            # msg("'%s' is more than one type, switching to no type hint" % self.type)
             return ''
-
-        # if self.type.find("|") > -1:
-        #     types = self.type.split("|")
-        #     if len(types) == 2 and types[1] == 'null':
-        #         return "?%s" % self.type
-        #     msg("'%s' is more than one type, switching to no type hint" % self.type)
-        #     return ''
 
         return self.type
 
@@ -213,16 +205,12 @@ class DocBlock(object):
         description = []
 
         for line in lines:
-            msg("line: %s" %line)
             line = line.strip(' \t*/').rstrip('.')
-            msg("line: %s" %line)
             if line.startswith('@'):
                 nameMatches = re.findall('\@(\w+) (:?.*)[ ]?.*', line)
                 if len(nameMatches) > 0:
                     name = nameMatches[0][0]
                     value = nameMatches[0][1]
-                    msg("name: %s" % name)
-                    msg("value: %s" % value)
 
                     self.addTag(name.strip('@'), value)
                 # [name, value, other] = line.split(" ", 2)
@@ -317,20 +305,16 @@ class Parser(object):
             visibility = visibilityMatches[0]
 
         dockBlockText = self._getDockBlockOfVariable(line)
-        msg("dockBlockText: %s" % dockBlockText)
         docblock = DocBlock()
         docblock.fromText(dockBlockText)
 
         typeName = 'mixed'
         if docblock.hasTag('var'):
             typeName = docblock.getTag('var')
-            msg("typeName: %s" % typeName)
             if typeName.find("|") > -1:
                 typeNames = typeName.split("|")
-                msg("typeNames: %s" % typeNames)
                 if len(typeNames) == 2 and typeNames[1] == 'null':
                     typeName = "?%s" % typeNames[0]
-                    msg("typeName: %s" % typeName)
 
         description = docblock.getDescription()
 
